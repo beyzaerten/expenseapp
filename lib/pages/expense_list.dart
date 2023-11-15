@@ -1,4 +1,5 @@
 import 'package:expenseapp/models/expense.dart';
+import 'package:expenseapp/widgets/expense_item.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseList extends StatefulWidget {
@@ -9,42 +10,47 @@ class ExpenseList extends StatefulWidget {
 }
 
 class _ExpenseListState extends State<ExpenseList> {
-  //dummy data
-
+  // dummy data
   final List<Expense> expenses = [
     Expense(
         name: "Yiyecek",
-        price: 200,
+        price: 200.524,
         date: DateTime.now(),
         category: Category.food),
     Expense(
-        name: 'Flutter Udemy Course',
+        name: "Turizm",
+        price: 5000,
+        date: DateTime.now(),
+        category: Category.travel),
+    Expense(
+        name: "Flutter Udemy Course",
         price: 200,
         date: DateTime.now(),
-        category: Category.education)
-  ];
+        category: Category.education),
+  ]; // firebase,veritabanı
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 250, child: Text("Grafik")),
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.all(5),
-            itemCount: expenses.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(expenses[index].name),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(
-              color: Color.fromARGB(255, 106, 106, 106),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 150,
+            child: Text("Grafik"),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: expenses.length,
+              itemBuilder: (context, index) {
+                return ExpenseItem(expenses[index]);
+              },
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }
+// Topbar eklemek vs..
