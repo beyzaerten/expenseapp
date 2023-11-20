@@ -10,25 +10,6 @@ class ExpenseList extends StatefulWidget {
 }
 
 class _ExpenseListState extends State<ExpenseList> {
-  // dummy data
-  final List<Expense> expenses = [
-    Expense(
-        name: "Yiyecek",
-        price: 200.524,
-        date: DateTime.now(),
-        category: Category.food),
-    Expense(
-        name: "Turizm",
-        price: 5000,
-        date: DateTime.now(),
-        category: Category.travel),
-    Expense(
-        name: "Flutter Udemy Course",
-        price: 200,
-        date: DateTime.now(),
-        category: Category.education),
-  ]; // firebase,veritabanı
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -53,4 +34,3 @@ class _ExpenseListState extends State<ExpenseList> {
     );
   }
 }
-// Topbar eklemek vs..
