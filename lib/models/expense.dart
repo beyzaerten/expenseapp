@@ -1,18 +1,16 @@
-// expense.dart
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 const uuid = Uuid();
 
 enum Category { food, education, travel, work }
 
-const categoryIcons = {
-  Category.food: Icons.food_bank_sharp,
-  Category.education: Icons.cast_for_education,
-  Category.work: Icons.car_rental,
-  Category.travel: Icons.card_travel,
-};
+// const categoryIcons = {
+//   Category.food: Icons.food_bank,
+//   Category.education: Icons.cast_for_education,
+//   Category.travel: Icons.travel_explore,
+// };
 
 class Expense {
   Expense(
@@ -21,27 +19,43 @@ class Expense {
       required this.date,
       required this.category})
       : id = uuid.v4();
+
   final String id;
   final String name;
   final double price;
   final DateTime date;
   final Category category;
 
+  //getter method bir değişken gibi davranan method
+  //setter metod bir değişken gibi davranan method
+
+  Icon getCategoryIcon(Category category) {
+    switch (category) {
+      case Category.food:
+        return const Icon(
+          Icons.food_bank,
+          color: Colors.amber,
+          size: 30,
+        );
+      case Category.education:
+        return const Icon(Icons.cast_for_education,
+            color: Colors.blueAccent, size: 30);
+
+      case Category.travel:
+        return const Icon(
+          Icons.travel_explore,
+          color: Colors.pinkAccent,
+          size: 30,
+        );
+      case Category.work:
+        return const Icon(Icons.work, color: Colors.red, size: 30);
+    }
+  }
+
   String get formattedDate {
     var formatter = DateFormat.yMd();
     return formatter.format(date);
   }
-} // dummy data
 
-final List<Expense> expenses = [
-  Expense(
-      name: "Yiyecek",
-      price: 200.59,
-      date: DateTime.now(),
-      category: Category.food),
-  Expense(
-      name: "Flutter Udemy Course",
-      price: 200.99,
-      date: DateTime.now(),
-      category: Category.education),
-]; // firebase,veritabanı
+  void undo() {}
+}

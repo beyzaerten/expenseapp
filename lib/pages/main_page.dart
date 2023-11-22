@@ -11,32 +11,63 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  void addNewExpenseList(Expense newAddlistExpense) {
+  final String _title = "Expense App";
+  final List<Expense> expenses = [
+    Expense(
+        name: "Schnitzel",
+        price: 100,
+        date: DateTime.now(),
+        category: Category.food),
+    Expense(
+        name: 'Flutter Udemy Course',
+        price: 200,
+        date: DateTime.now(),
+        category: Category.education),
+    Expense(
+        name: 'Balkan Tour',
+        price: 12200,
+        date: DateTime.now(),
+        category: Category.travel),
+  ];
+
+  void addExpense(Expense expense) {
     setState(() {
-      // listeye yeni veri eklemek
-      expenses.add(newAddlistExpense);
+      expenses.add(expense);
     });
   }
+
+  void removeExpense(Expense expense) {
+    setState(() {
+      expenses.remove(expense);
+    });
+  }
+
+  // bool isDark = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 146, 196, 9),
-        title: const Text("ExpenseApp"),
+        centerTitle: true,
+        title: Text(_title, style: Theme.of(context).textTheme.headlineMedium),
         actions: [
           IconButton(
               onPressed: () {
                 showModalBottomSheet(
                     context: context,
                     builder: (ctx) => NewExpense(
-                          addExpenseList: addNewExpenseList,
+                          onAdd: (expense) => addExpense(expense),
                         ));
               },
-              icon: const Icon(Icons.add)),
+              icon: const Icon(Icons.add),
+              iconSize: 20,
+              color: Colors.white),
         ],
       ),
-      body: ExpenseList(),
+      body: ExpenseList(
+        expenses,
+        removeExpense,
+      ),
     );
   }
 }

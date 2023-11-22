@@ -1,87 +1,104 @@
-import 'package:expenseapp/models/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:expenseapp/models/expense.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({Key? key, required this.addExpenseList}) : super(key: key);
+  const NewExpense({
+    Key? key,
+    required this.onAdd,
+  }) : super(key: key);
 
-  final Function(Expense) addExpenseList;
+  final void Function(Expense expense) onAdd;
+
   @override
   _NewExpenseState createState() => _NewExpenseState();
 }
 
 class _NewExpenseState extends State<NewExpense> {
   final _nameController = TextEditingController();
-  final _amountController = TextEditingController();
+  final _amoutController = TextEditingController();
+  DateTime now = DateTime.now();
   DateTime? _selectedDate;
-  Category _selectedCategory = Category.education;
+  Category selectedCategory = Category.food;
 
   void _openDatePicker() async {
-    DateTime now = DateTime.now();
-    DateTime oneyearsago = DateTime(now.year - 10, now.month, now.day);
-
-    // showDatePicker(
-    //         context: context,
-    //         initialDate: now,
-    //         firstDate: oneyearsago,
-    //         lastDate: now)
-    //     .then((value) {
-    //   print(value);
-
     DateTime? selectedDate = await showDatePicker(
-        context: context,
-        initialDate: _selectedDate == null ? now : _selectedDate!,
-        firstDate: oneyearsago,
-        lastDate: now);
+      context: context,
+      initialDate: _selectedDate == null ? now : _selectedDate!,
+      firstDate: DateTime(now.year - 1, now.month, now.day),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.light(
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+              primary: Color.fromARGB(255, 155, 78, 248),
+            ),
+            dialogBackgroundColor: Colors.white,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16,
+                  fontFamily: 'Quicksand',
+                ),
+                foregroundColor: Colors.white,
+                backgroundColor:
+                    Color.fromARGB(255, 155, 78, 248), //Background color
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(
+                    color: Colors.transparent,
+                    width: 1,
+                    style: BorderStyle.solid,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
 
     setState(() {
       _selectedDate = selectedDate;
     });
-    print("26. satır çalıştı");
   }
 
-  //   //await showDatePicker(
-  //      // context: context,
-  //       initialDate: now,
-  //       firstDate: oneyearsago,
-  //       lastDate: now);
-
-  //   print("26. satır çalıştı");
-  // }
-
   void _addNewExpense() {
-    final amount = double.tryParse(_amountController.text);
+    final amount = double.tryParse(_amoutController.text);
     if (amount == null ||
         amount < 0 ||
         _nameController.text.isEmpty ||
         _selectedDate == null) {
       showDialog(
-          context: context,
-          builder: (ctx) {
-            return AlertDialog(
-              title: const Text("validation error"),
-              content: const Text("please fill all blank areas"),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                    },
-                    child: const Text("okay "))
-              ],
-            );
-          });
+        context: context,
+        builder: ((context) {
+          return AlertDialog(
+            title: const Text('Validation Error'),
+            content: const Text('Please fill all blank area'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Tamam'),
+              ),
+            ],
+          );
+        }),
+      );
     } else {
-      // valid bir değer
-      // listeye ekleme yapılması gereken nokta..
-
-      // Listeye eklenecek veriler kullanıcıdan alındı
       Expense newExpense = Expense(
           name: _nameController.text,
           price: amount,
           date: _selectedDate!,
-          category: _selectedCategory);
+          category: selectedCategory);
 
-      widget.addExpenseList(newExpense);
+      widget.onAdd(newExpense);
 
       Navigator.pop(context);
     }
@@ -90,100 +107,127 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(15),
       child: Column(
         children: [
           TextField(
             controller: _nameController,
             maxLength: 50,
-            decoration: const InputDecoration(label: Text("Expense Name")),
+            decoration: InputDecoration(
+              labelText: 'Expense Name',
+              labelStyle: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
           ),
-          Row(
-            children: newMethod,
-          ),
-          const SizedBox(
-            height: 40,
+          TextField(
+            controller: _amoutController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Amount',
+              labelStyle: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+              prefixText: '₺',
+            ),
           ),
           Row(
             children: [
-              DropdownButton(
-                  value: _selectedCategory,
-                  items: Category.values.map((category) {
-                    return DropdownMenuItem(
-                        value: category, child: Text(category.name.toString()));
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      if (value != null) _selectedCategory = value;
-                    });
-                  })
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Date',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(_selectedDate == null
+                      ? 'Tarih Seçiniz'
+                      : DateFormat.yMd().format(_selectedDate!)),
+                ],
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(top: 28.0),
+                child: IconButton(
+                    onPressed: () => _openDatePicker(),
+                    icon: const Icon(Icons.calendar_month)),
+              ),
             ],
           ),
           const Divider(
-            height: 50,
+            height: 30,
             thickness: 1,
-            color: Color.fromARGB(255, 199, 120, 120),
+            color: Colors.grey,
           ),
-          const Spacer(),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Category',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const Text('Kategori Seçiniz'),
+                ],
+              ),
+              const Spacer(),
+              DropdownButton(
+                value: selectedCategory,
+                items: Category.values.map((category) {
+                  return DropdownMenuItem(
+                      value: category, child: Text(category.name.toString()));
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) selectedCategory = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 50,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 78, 112, 248),
-                    foregroundColor: Colors.white,
-                    fixedSize: const Size(110, 35),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("vazgeç")),
-              const SizedBox(
-                width: 20,
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(120, 44),
+                  foregroundColor: Color.fromARGB(255, 24, 25, 27),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Vazgeç'),
               ),
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 78, 112, 248),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 180, 78, 248),
                     foregroundColor: Colors.white,
-                    fixedSize: const Size(110, 35),
-                  ),
-                  onPressed: () {
-                    _addNewExpense();
-                  },
-                  child: const Text("Kaydet")),
+                    fixedSize: const Size(120, 44)),
+                onPressed: () {
+                  _addNewExpense();
+                },
+                child: const Text("Kaydet"),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
-  }
-
-  List<Widget> get newMethod {
-    return [
-      Expanded(
-        child: TextField(
-          controller: _amountController,
-          keyboardType: TextInputType.number,
-          decoration:
-              const InputDecoration(label: Text("Amount"), prefixText: "₺"),
-        ),
-      ),
-      const SizedBox(
-        width: 30,
-      ),
-      Expanded(
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: () => _openDatePicker(),
-              icon: const Icon(Icons.calendar_month),
-            ),
-            Text(_selectedDate == null
-                ? "Tarih Seçiniz"
-                : DateFormat.yMd().format(_selectedDate!)),
-          ],
-        ),
-      ),
-    ];
   }
 }
